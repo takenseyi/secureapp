@@ -1,2 +1,17 @@
 ---
 # tasks file for deploy_flask
+- name: Unzip Flask app
+  unarchive:
+    src: /tmp/app.zip
+    dest: /opt/secureapp
+    remote_src: yes
+
+- name: Install Python dependencies
+  pip:
+    requirements: /opt/secureapp/requirements.txt
+
+- name: Start Flask app with Gunicorn
+  shell: |
+    cd /opt/secureapp
+    nohup gunicorn -w 3 -b 0.0.0.0:5000 app:app &
+...

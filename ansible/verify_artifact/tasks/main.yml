@@ -1,2 +1,17 @@
 ---
 # tasks file for verify_artifact
+- name: Download app.zip
+  get_url:
+    url: "http://jenkins-server/artifacts/app.zip"
+    dest: "/tmp/app.zip"
+
+- name: Download hash.txt
+  get_url:
+    url: "http://jenkins-server/artifacts/hash.txt"
+    dest: "/tmp/hash.txt"
+
+- name: Verify SHA-256 hash
+  command: sha256sum -c /tmp/hash.txt
+  register: hash_check
+  failed_when: "'OK' not in hash_check.stdout"
+...

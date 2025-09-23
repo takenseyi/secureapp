@@ -1,2 +1,26 @@
 ---
 # tasks file for nginx_certbot
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Install Certbot
+  apt:
+    name: certbot
+    state: present
+
+- name: Obtain SSL Certificate
+  command: >
+    certbot certonly --standalone
+    --non-interactive --agree-tos
+    -m takenseyi@gmail.com
+    -d your-domain.com
+
+- name: Configure Nginx for HTTPS
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/default
+  notify: restart nginx
+...

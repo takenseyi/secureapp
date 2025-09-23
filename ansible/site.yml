@@ -1,0 +1,8 @@
+- name: Deploy Secure Flask App
+  hosts: flask_server
+  become: yes
+  roles:
+    - nginx_certbot
+    - verify_artifact
+    - deploy_flask
+    - mongodb_setup

@@ -1,2 +1,13 @@
 ---
 # tasks file for mongodb_setup
+- name: Install MongoDB
+  apt:
+    name: mongodb
+    state: present
+
+- name: Insert starter records
+  shell: |
+    mongo securedb --eval '
+      db.messages.insert({text: "Secure DevOps app deployed with verified artifact!"})
+    '
+...
