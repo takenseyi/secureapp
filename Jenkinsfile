@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/takenseyi/secureapp.git'
+                git branch: 'main1', url: 'https://github.com/takenseyi/secureapp.git'
             }
         }
 
