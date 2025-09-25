@@ -1,17 +1,47 @@
 ---
 # tasks file for deploy_flask
+- name: Install unzip on target server
+  package:
+    name: unzip
+    state: present
+
+- name: Ensure /opt/secureapp directory exists
+  file:
+    path: /opt/secureapp
+    state: directory
+    mode: '0755'
+
 - name: Unzip Flask app
   unarchive:
-    src: /tmp/app.zip
+    src: /tmp/secureapp.zip
     dest: /opt/secureapp
     remote_src: yes
 
-- name: Install Python dependencies
-  pip:
-    requirements: /opt/secureapp/requirements.txt
+- name: Create Python virtual environment and bootstrap pip
+  shell: |
+    python3 -m venv /opt/secureapp/venv
+    /opt/secureapp/venv/bin/python -m ensurepip --upgrade
+  args:
+    creates: /opt/secureapp/venv/bin/activate
+
+- name: Install Python dependencies from requirements.txt
+  command: /opt/secureapp/venv/bin/pip install -r /opt/secureapp/app/requirements.txt
+  register: pip_install
+  failed_when: pip_install.rc != 0
+
+- name: Show pip install output
+  debug:
+    msg: "{{ pip_install.stdout }}"
 
 - name: Start Flask app with Gunicorn
   shell: |
     cd /opt/secureapp
-    nohup gunicorn -w 3 -b 0.0.0.0:5000 app:app &
+    nohup /opt/secureapp/venv/bin/gunicorn -w 3 -b 127.0.0.1:5000 app:app &
+  args:
+    executable: /bin/bash
+
+# Gunicorn is bound to 127.0.0.1 to restrict access to the local server only.
+# This ensures the Flask app is not exposed directly to the internet.
+# Nginx acts as a reverse proxy, securely forwarding HTTPS traffic to Gunicorn.
+# This setup improves security and allows Nginx to manage SSL termination.
 ...

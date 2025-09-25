@@ -1,17 +1,27 @@
 ---
-# tasks file for verify_artifact
-- name: Download app.zip
+# tasks file for verify_artifact,make url for download dynamic the job number changes
+- name: Download secureapp.zip from Jenkins (build #5)
   get_url:
-    url: "http://jenkins-server/artifacts/app.zip"
-    dest: "/tmp/app.zip"
+    url: "http://54.221.3.207:8080/job/secureapp/5/artifact/secureapp.zip"
+    dest: "/tmp/secureapp.zip"
+    url_username: secureapp
+    url_password: "Password1$"
+    force_basic_auth: yes
 
-- name: Download hash.txt
+- name: Download hash.txt from Jenkins (build #5)
   get_url:
-    url: "http://jenkins-server/artifacts/hash.txt"
+    url: "http://54.221.3.207:8080/job/secureapp/5/artifact/hash.txt"
     dest: "/tmp/hash.txt"
+    url_username: secureapp
+    url_password: "Password1$"
+    force_basic_auth: yes
 
-- name: Verify SHA-256 hash
-  command: sha256sum -c /tmp/hash.txt
+
+- name: Verify SHA-256 hash from /tmp directory
+  command: sha256sum -c hash.txt
+  args:
+    chdir: /tmp
   register: hash_check
   failed_when: "'OK' not in hash_check.stdout"
+
 ...
