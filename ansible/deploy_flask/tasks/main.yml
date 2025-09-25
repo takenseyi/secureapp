@@ -1,5 +1,11 @@
 ---
 # tasks file for deploy_flask
+- name: Ensure /opt/secureapp directory exists
+  file:
+    path: /opt/secureapp
+    state: directory
+    mode: '0755'
+
 - name: Unzip Flask app
   unarchive:
     src: /tmp/secureapp.zip
