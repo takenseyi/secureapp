@@ -13,5 +13,9 @@
 - name: Start Flask app with Gunicorn
   shell: |
     cd /opt/secureapp
-    nohup gunicorn -w 3 -b 0.0.0.0:5000 app:app &
+    nohup gunicorn -w 3 -b 127.0.0.1:5000 app:app & 
+# Gunicorn is bound to 127.0.0.1 to restrict access to the local server only.
+# This ensures the Flask app is not exposed directly to the internet.
+# Nginx acts as a reverse proxy, securely forwarding HTTPS traffic to Gunicorn.
+# This setup improves security and allows Nginx to manage SSL termination.
 ...
