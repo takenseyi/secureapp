@@ -17,14 +17,27 @@
     dest: /opt/secureapp
     remote_src: yes
 
-- name: Install Python dependencies
-  pip:
-    requirements: /opt/secureapp/
+- name: Create Python virtual environment
+  command: python3 -m venv /opt/secureapp/venv
+  args:
+    creates: /opt/secureapp/venv
+
+- name: Install Python dependencies from requirements.txt
+  command: /opt/secureapp/venv/bin/pip install -r /opt/secureapp/requirements.txt
+  register: pip_install
+  failed_when: pip_install.rc != 0
+
+- name: Show pip install output
+  debug:
+    msg: "{{ pip_install.stdout }}"
 
 - name: Start Flask app with Gunicorn
   shell: |
     cd /opt/secureapp
-    nohup gunicorn -w 3 -b 127.0.0.1:5000 app:app & 
+    nohup /opt/secureapp/venv/bin/gunicorn -w 3 -b 127.0.0.1:5000 app:app &
+  args:
+    executable: /bin/bash
+
 # Gunicorn is bound to 127.0.0.1 to restrict access to the local server only.
 # This ensures the Flask app is not exposed directly to the internet.
 # Nginx acts as a reverse proxy, securely forwarding HTTPS traffic to Gunicorn.
