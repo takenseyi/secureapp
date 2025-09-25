@@ -5,7 +5,7 @@
     url: "http://54.221.3.207:8080/job/secureapp/5/artifact/secureapp.zip"
     dest: "/tmp/secureapp.zip"
     url_username: secureapp
-    url_password: "119f627f91a0f8d2baa4283e3533f650a8"
+    url_password: "Password1$"
     force_basic_auth: yes
 
 - name: Download hash.txt from Jenkins (build #5)
@@ -13,7 +13,7 @@
     url: "http://54.221.3.207:8080/job/secureapp/5/artifact/hash.txt"
     dest: "/tmp/hash.txt"
     url_username: secureapp
-    url_password: "119f627f91a0f8d2baa4283e3533f650a8"
+    url_password: "Password1$"
     force_basic_auth: yes
 
 - name: Verify SHA-256 hash
