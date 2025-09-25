@@ -16,10 +16,7 @@
     url_password: "Password1$"
     force_basic_auth: yes
 
-- name: Show verification result
-  debug:
-    msg: "{{ hash_check.stdout }}"
-    
+
 - name: Verify SHA-256 hash from /tmp directory
   command: sha256sum -c hash.txt
   args:
