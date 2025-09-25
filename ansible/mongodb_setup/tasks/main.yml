@@ -1,9 +1,42 @@
 ---
 # tasks file for mongodb_setup
+- name: Install prerequisites for MongoDB
+  apt:
+    name:
+      - gnupg
+      - curl
+      - wget
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Add MongoDB GPG key
+  shell: |
+    curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg
+  args:
+    creates: /usr/share/keyrings/mongodb-server-8.0.gpg
+  become: true
+
+- name: Add MongoDB repository (Ubuntu 20.04 or Debian 12)
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg] http://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.0 multiverse"
+    state: present
+    filename: mongodb-org-8.0
+  become: true
+
 - name: Install MongoDB
   apt:
-    name: mongodb
+    name: mongodb-org
     state: present
+    update_cache: yes
+  become: true
+
+- name: Start and enable MongoDB service
+  systemd:
+    name: mongod
+    state: started
+    enabled: yes
+  become: true
 
 - name: Insert starter records
   shell: |
