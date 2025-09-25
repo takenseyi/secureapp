@@ -16,8 +16,10 @@
     url_password: "Password1$"
     force_basic_auth: yes
 
-- name: Verify SHA-256 hash
-  command: sha256sum -c /tmp/hash.txt
+- name: Verify SHA-256 hash from /tmp directory
+  command: sha256sum -c hash.txt
+  args:
+    chdir: /tmp
   register: hash_check
   failed_when: "'OK' not in hash_check.stdout"
 
