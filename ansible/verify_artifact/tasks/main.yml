@@ -1,13 +1,13 @@
 ---
-# tasks file for verify_artifact
+# tasks file for verify_artifact,make url for download dynamic job number changes
 - name: Download app.zip
   get_url:
-    url: "http://jenkins-server/artifacts/app.zip"
+    url: "http://54.221.3.207:8080/job/secureapp/5/artifact/secureapp.zip"
     dest: "/tmp/app.zip"
 
 - name: Download hash.txt
   get_url:
-    url: "http://jenkins-server/artifacts/hash.txt"
+    url: "http://54.221.3.207:8080/job/secureapp/5/artifact/secureapp.zip"
     dest: "/tmp/hash.txt"
 
 - name: Verify SHA-256 hash
