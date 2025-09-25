@@ -1,2 +1,27 @@
 ---
 # tasks file for python_setup
+- name: Install Python on Debian/Ubuntu
+  apt:
+    name:
+      - python3
+      - python3-pip
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install Python on RedHat/CentOS/Amazon
+  yum:
+    name:
+      - python3
+      - python3-pip
+    state: present
+  when: ansible_os_family in ["RedHat", "Amazon"]
+
+- name: Verify Python installation
+  command: python3 --version
+  register: python_version
+
+- name: Show Python version
+  debug:
+    msg: "Installed Python version: {{ python_version.stdout }}"
+...

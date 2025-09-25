@@ -4,5 +4,6 @@
   roles:
     - nginx_certbot
     - verify_artifact
+    - python_setup
     - deploy_flask
     - mongodb_setup
