@@ -2,7 +2,7 @@
 # tasks file for deploy_flask
 - name: Unzip Flask app
   unarchive:
-    src: /tmp/app.zip
+    src: /tmp/secureapp.zip
     dest: /opt/secureapp
     remote_src: yes
 
