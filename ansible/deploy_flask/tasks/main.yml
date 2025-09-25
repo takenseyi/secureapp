@@ -25,7 +25,7 @@
     creates: /opt/secureapp/venv/bin/activate
 
 - name: Install Python dependencies from requirements.txt
-  command: /opt/secureapp/venv/bin/pip install -r /opt/secureapp/requirements.txt
+  command: /opt/secureapp/venv/bin/pip install -r /opt/secureapp/app/requirements.txt
   register: pip_install
   failed_when: pip_install.rc != 0
 
