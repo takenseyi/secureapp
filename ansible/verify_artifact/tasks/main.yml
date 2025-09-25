@@ -1,20 +1,36 @@
 ---
 # tasks file for verify_artifact,make url for download dynamic the job number changes
 - name: Download secureapp.zip from Jenkins (build #5)
-  get_url:
+  uri:
     url: "http://54.221.3.207:8080/job/secureapp/5/artifact/secureapp.zip"
-    dest: "/tmp/secureapp.zip"
-    url_username: secureapp
-    url_password: "Password1$"
+    method: GET
+    user: secureapp
+    password: "Password1$"
     force_basic_auth: yes
+    return_content: yes
+  register: zip_response
+
+- name: Save secureapp.zip to disk
+  copy:
+    content: "{{ zip_response.content }}"
+    dest: "/tmp/secureapp.zip"
+    mode: '0644'
 
 - name: Download hash.txt from Jenkins (build #5)
-  get_url:
+  uri:
     url: "http://54.221.3.207:8080/job/secureapp/5/artifact/hash.txt"
-    dest: "/tmp/hash.txt"
-    url_username: secureapp
-    url_password: "Password1$"
+    method: GET
+    user: secureapp
+    password: "Password1$"
     force_basic_auth: yes
+    return_content: yes
+  register: hash_response
+
+- name: Save hash.txt to disk
+  copy:
+    content: "{{ hash_response.content }}"
+    dest: "/tmp/hash.txt"
+    mode: '0644'
 
 - name: Verify SHA-256 hash
   command: sha256sum -c /tmp/hash.txt
