@@ -16,14 +16,15 @@
     url_password: "Password1$"
     force_basic_auth: yes
 
-- name: Compute SHA-256 hash of artifact
-  stat:
-    path: /tmp/artifact.zip
-    checksum_algorithm: sha256
-  register: artifact_stat
+- name: Show verification result
+  debug:
+    msg: "{{ hash_check.stdout }}"
+    
+- name: Verify SHA-256 hash from /tmp directory
+  command: sha256sum -c hash.txt
+  args:
+    chdir: /tmp
+  register: hash_check
+  failed_when: "'OK' not in hash_check.stdout"
 
-- name: Fail if hash does not match
-  fail:
-    msg: "Artifact integrity check failed. Expected hash does not match actual."
-  when: artifact_stat.stat.checksum != "expected_sha256_hash_here"
 ...
