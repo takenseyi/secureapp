@@ -1,5 +1,10 @@
 ---
 # tasks file for deploy_flask
+- name: Install unzip on target server
+  package:
+    name: unzip
+    state: present
+
 - name: Ensure /opt/secureapp directory exists
   file:
     path: /opt/secureapp
