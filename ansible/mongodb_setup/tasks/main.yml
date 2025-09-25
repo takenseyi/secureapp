@@ -17,9 +17,9 @@
     creates: /usr/share/keyrings/mongodb-server-8.0.gpg
   become: true
 
-- name: Add MongoDB repository (Ubuntu 20.04 or Debian 12)
+- name: Add MongoDB repository (Ubuntu 22.04)
   apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg] http://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.0 multiverse"
+    repo: "deb [signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.0 multiverse"
     state: present
     filename: mongodb-org-8.0
   become: true
@@ -38,9 +38,12 @@
     enabled: yes
   become: true
 
-- name: Insert starter records
+- name: Insert starter record into MongoDB
   shell: |
-    mongo securedb --eval '
-      db.messages.insert({text: "Secure DevOps app deployed with verified artifact!"})
+    /usr/bin/mongo securedb --eval '
+      db.messages.insertOne({text: "Secure DevOps app deployed with verified artifact!"})
     '
+  args:
+    executable: /bin/bash
+  become: true
 ...
