@@ -17,10 +17,12 @@
     dest: /opt/secureapp
     remote_src: yes
 
-- name: Create Python virtual environment
-  command: python3 -m venv /opt/secureapp/venv
+- name: Create Python virtual environment and bootstrap pip
+  shell: |
+    python3 -m venv /opt/secureapp/venv
+    /opt/secureapp/venv/bin/python -m ensurepip --upgrade
   args:
-    creates: /opt/secureapp/venv
+    creates: /opt/secureapp/venv/bin/activate
 
 - name: Install Python dependencies from requirements.txt
   command: /opt/secureapp/venv/bin/pip install -r /opt/secureapp/requirements.txt
