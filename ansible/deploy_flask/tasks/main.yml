@@ -8,7 +8,7 @@
 
 - name: Install Python dependencies
   pip:
-    requirements: /opt/secureapp/requirements.txt
+    requirements: /opt/secureapp/
 
 - name: Start Flask app with Gunicorn
   shell: |
