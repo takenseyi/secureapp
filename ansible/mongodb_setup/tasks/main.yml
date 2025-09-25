@@ -24,9 +24,11 @@
     filename: mongodb-org-8.0
   become: true
 
-- name: Install MongoDB
+- name: Install MongoDB and mongosh
   apt:
-    name: mongodb-org
+    name:
+      - mongodb-org
+      - mongodb-mongosh
     state: present
     update_cache: yes
   become: true
@@ -40,7 +42,7 @@
 
 - name: Insert starter record into MongoDB
   shell: |
-    /usr/bin/mongo securedb --eval '
+    mongosh securedb --eval '
       db.messages.insertOne({text: "Secure DevOps app deployed with verified artifact!"})
     '
   args:
