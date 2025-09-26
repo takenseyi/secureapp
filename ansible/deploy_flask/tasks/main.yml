@@ -43,7 +43,7 @@
 
 - name: Start Flask app with Gunicorn on port 80
   shell: |
-    cd /opt/secureapp
+    cd /opt/secureapp/app
     nohup /opt/secureapp/venv/bin/gunicorn -w 3 -b 0.0.0.0:80 app:app &
   args:
     executable: /bin/bash
@@ -53,4 +53,5 @@
 # This ensures the Flask app is not exposed directly to the internet.
 # Nginx acts as a reverse proxy, securely forwarding HTTPS traffic to Gunicorn.
 # This setup improves security and allows Nginx to manage SSL termination.
+# where you are at cd location determins app:app:app
 ...
