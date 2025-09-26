@@ -1,5 +1,4 @@
 ---
-# tasks file for nginx_certbot, update your-domain.com
 - name: Install Nginx
   apt:
     name: nginx
@@ -16,11 +15,6 @@
     certbot certonly --standalone
     --non-interactive --agree-tos
     -m takenseyi@gmail.com
-    -d your-domain.com
-
-- name: Configure Nginx for HTTPS
-  template:
-    src: nginx.conf.j2 
-    dest: /etc/nginx/sites-available/default
-  notify: restart nginx
+    -d secureapp.shop -d www.secureapp.shop
+  notify: Reload Nginx
 ...

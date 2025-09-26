@@ -33,18 +33,18 @@
   debug:
     msg: "{{ pip_install.stdout }}"
 
-- name: Stop nginx if running (optional cleanup)
-  systemd:
-    name: nginx
-    state: stopped
-    enabled: false
-  ignore_errors: true
-  become: true
+#- name: Stop nginx if running (optional cleanup)
+#  systemd:
+#    name: nginx
+#    state: stopped
+#    enabled: false
+#  ignore_errors: true
+#  become: true
 
 - name: Start Flask app with Gunicorn on port 80
-  shell: |
-    cd /opt/secureapp/app
-    nohup /opt/secureapp/venv/bin/gunicorn -w 3 -b 0.0.0.0:80 app:app &
+  shell:
+   cd /opt/secureapp/app
+   nohup /opt/secureapp/venv/bin/gunicorn -w 3 -b 0.0.0.0:5000 app:app &
   args:
     executable: /bin/bash
   become: true

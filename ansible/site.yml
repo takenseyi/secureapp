@@ -2,6 +2,7 @@
   hosts: flask_server
   become: yes
   roles:
+    - nginx_certbot
     - verify_artifact
     - python_setup
     - deploy_flask
