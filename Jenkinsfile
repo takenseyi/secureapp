@@ -17,7 +17,7 @@ pipeline {
         stage('Package App') {
             steps {
                 sh """
-                    zip -r ${ZIP_NAME} . -x '*.git*'
+                    zip -r ${ZIP_NAME} app -x "app/.git/*"
                     sha256sum ${ZIP_NAME} > ${HASH_FILE}
                 """
             }
