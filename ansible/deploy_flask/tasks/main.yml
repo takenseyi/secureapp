@@ -44,7 +44,7 @@
 - name: Start Flask app with Gunicorn on port 5000
   shell:
    cd /opt/secureapp/app
-   nohup /opt/secureapp/venv/bin/gunicorn -w 3 -b 0.0.0.0:5000 app:app &
+   nohup /opt/secureapp/venv/bin/gunicorn -w 3 -b 0.0.0.0:5000 app &
   args:
     executable: /bin/bash
   become: true
