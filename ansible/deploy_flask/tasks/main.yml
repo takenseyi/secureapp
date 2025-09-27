@@ -52,8 +52,8 @@
       [Service]
       User=ubuntu
       Group=www-data
-      WorkingDirectory=/opt/secureapp
-      ExecStart=/opt/secureapp/venv/bin/gunicorn -w 3 -b 127.0.0.1:5000 app:app:app
+      WorkingDirectory=/opt/secureapp/app
+      ExecStart=/opt/secureapp/venv/bin/gunicorn -w 3 -b 127.0.0.1:5000 app:app &
       Restart=always
 
       [Install]
