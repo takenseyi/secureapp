@@ -2,7 +2,7 @@
 # tasks file for verify_artifact,make url for download dynamic the job number changes
 - name: Download secureapp.zip from Jenkins (build #5)
   get_url:
-    url: "http://3.85.4.177:8080/job/secureapp/7/artifact/secureapp.zip"
+    url: "http://3.85.4.177:8080/job/secureapp/8/artifact/secureapp.zip"
     dest: "/tmp/secureapp.zip"
     url_username: secureapp
     url_password: "Password1$"
@@ -10,7 +10,7 @@
 
 - name: Download hash.txt from Jenkins (build #5)
   get_url:
-    url: "http://3.85.4.177:8080/job/secureapp/7/artifact/hash.txt"
+    url: "http://3.85.4.177:8080/job/secureapp/8/artifact/hash.txt"
     dest: "/tmp/hash.txt"
     url_username: secureapp
     url_password: "Password1$"
