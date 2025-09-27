@@ -1,2 +1,12 @@
 ---
 # vars file for verify_artifact
+ vars:
+    jenkins_url: "http://3.85.4.177:8080"
+    jenkins_job: "secureapp"
+    jenkins_user: "secureapp"
+    jenkins_password: "Password1$"
+    artifact_name: "secureapp.zip"
+    hash_file_name: "hash.txt"
+    download_dir: "/tmp"
+    deploy_target: "/opt/secureapp/app"
+...

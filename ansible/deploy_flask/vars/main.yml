@@ -1,2 +1,8 @@
 ---
 # vars file for deploy_flask
+    jenkins_job: "secureapp"
+    artifact_name: "secureapp.zip"
+    hash_file_name: "hash.txt"
+    download_dir: "/tmp"
+    deploy_target: "/opt/secureapp"
+...
