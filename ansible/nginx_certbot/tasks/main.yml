@@ -1,5 +1,5 @@
 ---
-# tasks file for nginx_certbot
+
 - name: Install Nginx
   apt:
     name: nginx
@@ -11,16 +11,48 @@
     name: certbot
     state: present
 
-- name: Obtain SSL Certificate
+- name: Stop Nginx before Certbot (if running)
+  systemd:
+    name: nginx
+    state: stopped
+  become: true
+  ignore_errors: true
+
+- name: Obtain SSL Certificate for secureapp.click
   command: >
     certbot certonly --standalone
     --non-interactive --agree-tos
     -m takenseyi@gmail.com
-    -d your-domain.com
+    -d secureapp.click -d www.secureapp.click
+  become: true
+#  notify: Reload Nginx
 
-- name: Configure Nginx for HTTPS
+- name: Start Nginx after Certbot
+  systemd:
+    name: nginx
+    state: started
+    enabled: true
+  become: true
+
+- name: Deploy Nginx site config for secureapp
   template:
     src: nginx.conf.j2
-    dest: /etc/nginx/sites-available/default
-  notify: restart nginx
+    dest: /etc/nginx/sites-available/secureapp
+  notify: Reload nginx
+  become: true
+
+- name: Enable secureapp site
+  file:
+    src: /etc/nginx/sites-available/secureapp
+    dest: /etc/nginx/sites-enabled/secureapp
+    state: link
+  become: true
+
+- name: Remove default Nginx site (optional)
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+    notify: Reload nginx  #added to see if it helps to see app on browser
+  become: true
+  ignore_errors: true
 ...
