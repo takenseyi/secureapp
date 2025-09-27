@@ -1,0 +1,31 @@
+---
+# tasks file for python_setup
+- name: Install Python and venv on Debian/Ubuntu
+  apt:
+    name:
+      - python3
+      - python3-pip
+      - python3-venv
+    state: present
+    update_cache: yes
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Install Python and venv on RedHat/CentOS/Amazon
+  yum:
+    name:
+      - python3
+      - python3-pip
+      - python3-virtualenv  # fallback if python3-venv isn't available
+    state: present
+  become: true
+  when: ansible_os_family in ["RedHat", "Amazon"]
+
+- name: Verify Python installation
+  command: python3 --version
+  register: python_version
+
+- name: Show Python version
+  debug:
+    msg: "Installed Python version: {{ python_version.stdout }}"
+...
