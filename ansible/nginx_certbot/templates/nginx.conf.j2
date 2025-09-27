@@ -1,7 +1,7 @@
 {# TODO: Update 'your-domain.com' before deployment #}
 server {
     listen 80;
-    server_name secureapp.shop www.secureapp.shop;
+    server_name secureapp.click www.secureapp.click;
 
     location / {
         return 301 https://$host$request_uri;
@@ -10,10 +10,10 @@ server {
 
 server {
     listen 443 ssl;
-    server_name secureapp.shop www.secureapp.shop;
+    server_name secureapp.click www.secureapp.click;
 
-    ssl_certificate /etc/letsencrypt/live/secureapp.shop/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/secureapp.shop/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/secureapp.click/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/secureapp.click/privkey.pem;
 
     location / {
         proxy_pass http://127.0.0.1:5000;  # Flask or Node app
