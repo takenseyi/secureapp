@@ -28,17 +28,11 @@ pipeline {
                 archiveArtifacts artifacts: "${ZIP_NAME}, ${HASH_FILE}", fingerprint: true
             }
         }
-
-        stage('Trigger Ansible Deployment') {
-            steps {
-                sh 'ansible-playbook -i inventory.ini site.yml'
-            }
-        }
     }
 
     post {
         success {
-            echo "Artifacts packaged and deployed successfully."
+            echo "Artifacts packaged and archived successfully."
         }
         failure {
             echo "Build failed. Check logs for details."
