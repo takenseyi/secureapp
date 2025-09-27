@@ -1,3 +1,6 @@
+My Current Pipeline:
+
+
 pipeline {
     agent any
 
@@ -26,14 +29,6 @@ pipeline {
         stage('Archive Artifacts') {
             steps {
                 archiveArtifacts artifacts: "${ZIP_NAME}, ${HASH_FILE}", fingerprint: true
-            }
-        }
-
-        // 🔍 NEW STAGE using the RHEL 10 Agent
-        stage('Check RHEL10 Agent') {
-            agent { label 'rhel10' }
-            steps {
-                sh 'whoami; hostname; ansible --version'
             }
         }
     }
