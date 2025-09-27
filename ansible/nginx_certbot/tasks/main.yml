@@ -1,11 +1,4 @@
 ---
-- name: Stop Nginx before Certbot (if running)
-  systemd:
-    name: nginx
-    state: stopped
-  become: true
-  ignore_errors: true
-
 - name: Install Nginx
   apt:
     name: nginx
@@ -16,6 +9,13 @@
   apt:
     name: certbot
     state: present
+
+- name: Stop Nginx before Certbot (if running)
+  systemd:
+    name: nginx
+    state: stopped
+  become: true
+  ignore_errors: true
 
 - name: Obtain SSL Certificate for secureapp.click
   command: >
