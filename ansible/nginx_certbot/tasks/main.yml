@@ -17,12 +17,12 @@
     name: certbot
     state: present
 
-- name: Obtain SSL Certificate for {{ domain_name }}
+- name: Obtain SSL Certificate for secureapp.shop
   command: >
     certbot certonly --standalone
     --non-interactive --agree-tos
-    -m {{ certbot_email }}
-    -d {{ domain_name }} -d www.{{ domain_name }}
+    -m takenseyi@gmail.com
+    -d secureapp.shop -d www.secureapp.shop
   become: true
   notify: Reload Nginx
 
