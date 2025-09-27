@@ -1,68 +1,64 @@
 ---
 # tasks file for verify_artifact,make url for download dynamic the job number changes
-- name: Verify and deploy secureapp artifact from Jenkins
+- name: Install community.general collection
+  ansible.builtin.command: ansible-galaxy collection install community.general
+  changed_when: false
 
-  pre_tasks:
-    - name: Install community.general collection
-      ansible.builtin.command: ansible-galaxy collection install community.general
-      changed_when: false
+- name: Get latest Jenkins build info
+  community.general.jenkins_build_info:
+    name: "{{ jenkins_job }}"
+    user: "{{ jenkins_user }}"
+    password: "{{ jenkins_password }}"
+    url: "{{ jenkins_url }}"
+  register: jenkins_info
 
-  tasks:
-    - name: Get latest Jenkins build info
-      community.general.jenkins_build_info:
-        name: "{{ jenkins_job }}"
-        user: "{{ jenkins_user }}"
-        password: "{{ jenkins_password }}"
-        url: "{{ jenkins_url }}"
-      register: jenkins_info
+- name: Set latest build number
+  set_fact:
+    latest_build_number: "{{ jenkins_info.build_info.number }}"
 
-    - name: Set latest build number
-      set_fact:
-        latest_build_number: "{{ jenkins_info.build_info.number }}"
+- name: Download {{ artifact_name }} from Jenkins
+  get_url:
+    url: "{{ jenkins_url }}/job/{{ jenkins_job }}/{{ latest_build_number }}/artifact/{{ artifact_name }}"
+    dest: "{{ download_dir }}/{{ artifact_name }}"
+    url_username: "{{ jenkins_user }}"
+    url_password: "{{ jenkins_password }}"
+    force_basic_auth: yes
 
-    - name: Download {{ artifact_name }} from Jenkins
-      get_url:
-        url: "{{ jenkins_url }}/job/{{ jenkins_job }}/{{ latest_build_number }}/artifact/{{ artifact_name }}"
-        dest: "{{ download_dir }}/{{ artifact_name }}"
-        url_username: "{{ jenkins_user }}"
-        url_password: "{{ jenkins_password }}"
-        force_basic_auth: yes
+- name: Download {{ hash_file_name }} from Jenkins
+  get_url:
+    url: "{{ jenkins_url }}/job/{{ jenkins_job }}/{{ latest_build_number }}/artifact/{{ hash_file_name }}"
+    dest: "{{ download_dir }}/{{ hash_file_name }}"
+    url_username: "{{ jenkins_user }}"
+    url_password: "{{ jenkins_password }}"
+    force_basic_auth: yes
 
-    - name: Download {{ hash_file_name }} from Jenkins
-      get_url:
-        url: "{{ jenkins_url }}/job/{{ jenkins_job }}/{{ latest_build_number }}/artifact/{{ hash_file_name }}"
-        dest: "{{ download_dir }}/{{ hash_file_name }}"
-        url_username: "{{ jenkins_user }}"
-        url_password: "{{ jenkins_password }}"
-        force_basic_auth: yes
+- name: Verify SHA-256 hash
+  command: sha256sum -c {{ hash_file_name }}
+  args:
+    chdir: "{{ download_dir }}"
+  register: hash_check
+  failed_when: "'OK' not in hash_check.stdout"
 
-    - name: Verify SHA-256 hash
-      command: sha256sum -c {{ hash_file_name }}
-      args:
-        chdir: "{{ download_dir }}"
-      register: hash_check
-      failed_when: "'OK' not in hash_check.stdout"
+- name: Display success message
+  debug:
+    msg: "✅ Artifact verified: SHA256 matches expected value."
+  when: "'OK' in hash_check.stdout"
 
-    - name: Display success message
-      debug:
-        msg: "✅ Artifact verified: SHA256 matches expected value."
-      when: "'OK' in hash_check.stdout"
+- name: Fail with message if checksum does not match
+  fail:
+    msg: "❌ Artifact integrity check failed. Deployment aborted."
+  when: "'OK' not in hash_check.stdout"
 
-    - name: Fail with message if checksum does not match
-      fail:
-        msg: "❌ Artifact integrity check failed. Deployment aborted."
-      when: "'OK' not in hash_check.stdout"
+- name: Ensure deployment root directory exists
+  file:
+    path: "{{ deploy_target }}"
+    state: directory
+    mode: '0755'
 
-    - name: Ensure deployment root directory exists
-      file:
-        path: "{{ deploy_target }}"
-        state: directory
-        mode: '0755'
-
-    - name: Deploy artifact if verified
-      unarchive:
-       src: "{{ download_dir }}/{{ artifact_name }}"
-       dest: "{{ deploy_target }}"
-      remote_src: yes
-      when: "'OK' in hash_check.stdout"
+- name: Deploy artifact if verified
+  unarchive:
+    src: "{{ download_dir }}/{{ artifact_name }}"
+    dest: "{{ deploy_target }}"
+    remote_src: yes
+  when: "'OK' in hash_check.stdout"
 ...
