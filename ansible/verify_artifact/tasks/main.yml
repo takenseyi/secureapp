@@ -1,6 +1,5 @@
 ---
 # tasks file for verify_artifact,make url for download dynamic the job number changes
----
 - name: Verify and deploy secureapp artifact from Jenkins
   hosts: localhost
   gather_facts: false

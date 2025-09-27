@@ -1,6 +1,5 @@
 ---
 # tasks file for deploy_flask
----
 - name: Deploy Flask app from Jenkins artifact
   hosts: all
   become: true
