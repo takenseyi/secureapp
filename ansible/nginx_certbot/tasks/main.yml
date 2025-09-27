@@ -1,4 +1,11 @@
 ---
+- name: Stop Nginx before Certbot (if running)
+  systemd:
+    name: nginx
+    state: stopped
+  become: true
+  ignore_errors: true
+
 - name: Install Nginx
   apt:
     name: nginx
@@ -10,11 +17,19 @@
     name: certbot
     state: present
 
-- name: Obtain SSL Certificate
+- name: Obtain SSL Certificate for {{ domain_name }}
   command: >
     certbot certonly --standalone
     --non-interactive --agree-tos
-    -m takenseyi@gmail.com
-    -d secureapp.shop -d www.secureapp.shop
+    -m {{ certbot_email }}
+    -d {{ domain_name }} -d www.{{ domain_name }}
+  become: true
   notify: Reload Nginx
+
+- name: Start Nginx after Certbot
+  systemd:
+    name: nginx
+    state: started
+    enabled: true
+  become: true
 ...
