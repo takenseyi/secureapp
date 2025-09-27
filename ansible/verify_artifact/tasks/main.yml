@@ -12,6 +12,7 @@
     url: "{{ jenkins_url }}"
   register: jenkins_info
 
+
 - name: Set latest build number
   set_fact:
     latest_build_number: "{{ jenkins_info.build_info.number }}"
