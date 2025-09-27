@@ -41,13 +41,36 @@
 #  ignore_errors: true
 #  become: true
 
-- name: Start Flask app with Gunicorn on port 80
-  shell:
-   cd /opt/secureapp/app
-   nohup /opt/secureapp/venv/bin/gunicorn -w 3 -b 0.0.0.0:5000 app:app &
-  args:
-    executable: /bin/bash
+- name: Create Gunicorn systemd service for secureapp
+  copy:
+    dest: /etc/systemd/system/secureapp.service
+    content: |
+      [Unit]
+      Description=Gunicorn instance to serve secureapp
+      After=network.target
+
+      [Service]
+      User=ubuntu
+      Group=www-data
+      WorkingDirectory=/opt/secureapp/app
+      ExecStart=/opt/secureapp/venv/bin/gunicorn -w 3 -b 127.0.0.1:5000 app:app
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
   become: true
+
+- name: Reload systemd daemon
+  command: systemctl daemon-reexec
+  become: true
+
+- name: Enable and start Gunicorn service
+  systemd:
+    name: secureapp
+    enabled: true
+    state: started
+  become: true
+
 
 # Gunicorn is bound to 127.0.0.1 to restrict access to the local server only.
 # This ensures the Flask app is not exposed directly to the internet.
