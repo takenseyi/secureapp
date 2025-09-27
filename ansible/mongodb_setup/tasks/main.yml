@@ -1,90 +1,53 @@
 ---
 # tasks file for mongodb_setup
-- name: Cross-platform MongoDB setup
-  hosts: all
+- name: Install prerequisites for MongoDB
+  apt:
+    name:
+      - gnupg
+      - curl
+      - wget
+    state: present
+    update_cache: yes
   become: true
-  gather_facts: true
 
-  vars:
-    mongodb_version: "8.0"
-    mongodb_gpg_key_url: "https://www.mongodb.org/static/pgp/server-8.0.asc"
-    gpg_key_path: "/usr/share/keyrings/mongodb-server-8.0.gpg"
-    ubuntu_codename: "jammy"
-    mongodb_repo_debian: "deb [signed-by={{ gpg_key_path }}] https://repo.mongodb.org/apt/ubuntu {{ ubuntu_codename }}/mongodb-org/{{ mongodb_version }} multiverse"
-    mongodb_repo_redhat: "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ mongodb_version }}/x86_64/"
-    mongodb_packages:
+- name: Add MongoDB GPG key
+  shell: |
+    curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg
+  args:
+    creates: /usr/share/keyrings/mongodb-server-8.0.gpg
+  become: true
+
+- name: Add MongoDB repository (Ubuntu 22.04)
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.0 multiverse"
+    state: present
+    filename: mongodb-org-8.0
+  become: true
+
+- name: Install MongoDB and mongosh
+  apt:
+    name:
       - mongodb-org
       - mongodb-mongosh
-    starter_db: "securedb"
-    starter_collection: "messages"
-    starter_record: '{ "text": "Secure DevOps app deployed with verified artifact!" }'
+    state: present
+    update_cache: yes
+  become: true
 
-  tasks:
+- name: Start and enable MongoDB service
+  systemd:
+    name: mongod
+    state: started
+    enabled: yes
+  become: true
 
-    - name: Install prerequisites on Debian/Ubuntu
-      apt:
-        name:
-          - gnupg
-          - curl
-          - wget
-        state: present
-        update_cache: yes
-      when: ansible_os_family == "Debian"
+- name: Insert starter record into MongoDB
+  shell: |
+    mongosh securedb --eval '
+      db.messages.insertOne({text: "Secure DevOps app deployed with verified artifact!"})
+    '
+  args:
+    executable: /bin/bash
+  become: true
+...
 
-    - name: Install prerequisites on RedHat/CentOS
-      yum:
-        name:
-          - curl
-          - wget
-          - gnupg2
-        state: present
-      when: ansible_os_family == "RedHat"
-
-    - name: Add MongoDB GPG key
-      shell: |
-        curl -fsSL {{ mongodb_gpg_key_url }} | gpg --dearmor -o {{ gpg_key_path }}
-      args:
-        creates: "{{ gpg_key_path }}"
-
-    - name: Add MongoDB repository on Debian/Ubuntu
-      apt_repository:
-        repo: "{{ mongodb_repo_debian }}"
-        state: present
-        filename: "mongodb-org-{{ mongodb_version }}"
-      when: ansible_os_family == "Debian"
-
-    - name: Add MongoDB repository on RedHat/CentOS
-      yum_repository:
-        name: "mongodb-org-{{ mongodb_version }}"
-        description: "MongoDB Repository"
-        baseurl: "{{ mongodb_repo_redhat }}"
-        gpgcheck: yes
-        enabled: yes
-        gpgkey: "{{ mongodb_gpg_key_url }}"
-      when: ansible_os_family == "RedHat"
-
-    - name: Install MongoDB and mongosh on Debian/Ubuntu
-      apt:
-        name: "{{ mongodb_packages }}"
-        state: present
-        update_cache: yes
-      when: ansible_os_family == "Debian"
-
-    - name: Install MongoDB and mongosh on RedHat/CentOS
-      yum:
-        name: "{{ mongodb_packages }}"
-        state: present
-      when: ansible_os_family == "RedHat"
-
-    - name: Start and enable MongoDB service
-      systemd:
-        name: mongod
-        state: started
-        enabled: yes
-
-    - name: Insert starter record into MongoDB
-      shell: >
-        mongosh {{ starter_db }} --eval "db.{{ starter_collection }}.insertOne({{ starter_record }})"
-      args:
-        executable: /bin/bash
 
