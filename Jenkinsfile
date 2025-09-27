@@ -10,14 +10,14 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main1', url: 'https://github.com/takenseyi/secureapp.git'
+                git 'https://github.com/takenseyi/secureapp.git'
             }
         }
 
         stage('Package App') {
             steps {
                 sh """
-                    zip -r ${ZIP_NAME} app -x "app/.git/*"
+                    zip -r ${ZIP_NAME} . -x '*.git*'
                     sha256sum ${ZIP_NAME} > ${HASH_FILE}
                 """
             }

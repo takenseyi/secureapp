@@ -1,8 +1,7 @@
 ---
 # handlers file for nginx_certbot
-- name: Reload nginx
+- name: Restart Nginx
   service:
     name: nginx
-    state: reloaded
-  become: true
+    state: restarted
 ...
