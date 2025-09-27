@@ -24,7 +24,7 @@
     -m takenseyi@gmail.com
     -d secureapp.click -d www.secureapp.click
   become: true
-  notify: Reload Nginx
+#  notify: Reload Nginx
 
 - name: Start Nginx after Certbot
   systemd:
