@@ -1,6 +1,3 @@
-My Current Pipeline:
-
-
 pipeline {
     agent any
 
