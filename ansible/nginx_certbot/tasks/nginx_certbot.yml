@@ -52,7 +52,7 @@
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-    notify: Reload nginx  #added to see if it helps to see app on browser
+  notify: Reload nginx    #added to see if it helps to see app on browser
   become: true
   ignore_errors: true
 ...
