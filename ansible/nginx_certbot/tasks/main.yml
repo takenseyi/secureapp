@@ -33,7 +33,7 @@
     state: started
     enabled: true
   become: true
-  
+
 - name: Deploy Nginx site config for secureapp
   template:
     src: nginx.conf.j2
@@ -52,5 +52,6 @@
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
+    notify: Reload nginx  #added to see if it helps to see app on browser
   become: true
 ...
