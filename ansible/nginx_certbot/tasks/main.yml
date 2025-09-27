@@ -1,4 +1,5 @@
 ---
+
 - name: Install Nginx
   apt:
     name: nginx
@@ -31,5 +32,25 @@
     name: nginx
     state: started
     enabled: true
+  become: true
+  
+- name: Deploy Nginx site config for secureapp
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/secureapp
+  notify: Reload nginx
+  become: true
+
+- name: Enable secureapp site
+  file:
+    src: /etc/nginx/sites-available/secureapp
+    dest: /etc/nginx/sites-enabled/secureapp
+    state: link
+  become: true
+
+- name: Remove default Nginx site (optional)
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
   become: true
 ...
