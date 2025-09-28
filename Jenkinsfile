@@ -29,7 +29,7 @@ pipeline {
             steps {
                 sh """
                     cp ${ZIP_NAME} ${LATEST_ZIP}
-                    cp ${HASH_FILE} ${LATEST_HASH}
+                    sha256sum ${LATEST_ZIP} > ${LATEST_HASH}
                 """
             }
         }
