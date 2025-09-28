@@ -3,14 +3,16 @@ pipeline {
 
     environment {
         APP_NAME = "secureapp"
-        ZIP_NAME = "${APP_NAME}.zip"
-        HASH_FILE = "hash.txt"
+        ZIP_NAME = "${APP_NAME}-${BUILD_NUMBER}.zip"
+        HASH_FILE = "hash-${BUILD_NUMBER}.txt"
+        LATEST_ZIP = "${APP_NAME}-latest.zip"
+        LATEST_HASH = "hash-latest.txt"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main1', url: 'https://github.com/takenseyi/secureapp.git'
+                git branch: 'main2', url: 'https://github.com/takenseyi/secureapp.git'
             }
         }
 
@@ -23,9 +25,18 @@ pipeline {
             }
         }
 
+        stage('Prepare Latest Artifacts') {
+            steps {
+                sh """
+                    cp ${ZIP_NAME} ${LATEST_ZIP}
+                    cp ${HASH_FILE} ${LATEST_HASH}
+                """
+            }
+        }
+
         stage('Archive Artifacts') {
             steps {
-                archiveArtifacts artifacts: "${ZIP_NAME}, ${HASH_FILE}", fingerprint: true
+                archiveArtifacts artifacts: "${ZIP_NAME}, ${HASH_FILE}, ${LATEST_ZIP}, ${LATEST_HASH}", fingerprint: true
             }
         }
     }
